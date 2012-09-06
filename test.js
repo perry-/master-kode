@@ -1,1 +1,3 @@
-document.getElementById("heading").innerHTML="LOLOLOL";
+function changeHeader(){
+	document.getElementById("heading").innerHTML="LOLOLOL";
+}

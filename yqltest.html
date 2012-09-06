@@ -19,11 +19,18 @@
       // Place news stories in div tag
       document.getElementById('results').innerHTML = output;  
     }
+
+    function fetchJSON(jsonObject){
+      var items = jsonObject.query.results.item;
+
+      document.getElementById('results').innerHTML = items;
+    }
+
     </script>
   </head>
   <body>
   <div id='results'></div>
-  <script src='http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22&format=json&callback=cbfunc'>
+  <script src='http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22&format=json&callback=fetchJSON'>
   </script> 
 </body>
 </html>
