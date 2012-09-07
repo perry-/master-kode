@@ -1,8 +1,6 @@
 <html>
-  <head><title>YQL and RSS: Yahoo! Top News Stories</title>
-  <style type='text/css'>
-    #results{ width: 40%; margin-left: 30%; border: 1px solid gray; padding: 5px; height: 200px; overflow: auto; } 
-  </style>
+  <head><title>Nasjonale retningslinjer</title>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
   <script type='text/javascript'>
     // Parses returned response and extracts
     // the title, links, and text of each news story.
@@ -21,16 +19,48 @@
     }
 
     function fetchJSON(jsonObject){
-      var items = jsonObject.query.results.item;
-
-      document.getElementById('results').innerHTML = items;
+      var content = jsonObject.query.results.div.p.content;
+      console.log(jsonObject);
+      document.getElementById('results').innerHTML = content;
     }
+
+    function fetchURLs(jsonObject){
+      var urls = jsonObject.query.results.ul.li;
+      var no_urls = urls.length;
+      var output = '';
+      
+      for(i=0; i<no_urls; i++){
+        var title = urls[i].a.content;
+        var link = urls[i].a.href;
+        output += "<h3><a href='"+link+"'>"+title+"</a></h3><hr/>";
+        
+        $.getJSON("http://query.yahooapis.com/v1/public/yql?"+"q=select%20*%20from%20html%20where%20url%3D%22"+encodeURIComponent(link)+"%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'maintextguideline'%5D%22&format=json'&callback=?",
+
+          // this function gets the data from the successful
+          // JSON-P call
+          function(data){
+
+            console.log(data);
+            
+          }
+        );
+      }
+
+      /*
+      function fetchSingleURL(jsonObject){ 
+        console.log(jsonObject);
+      }*/
+     // document.getElementById('results').innerHTML = output;  
+    }
+
+
 
     </script>
   </head>
   <body>
   <div id='results'></div>
-  <script src='http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22&format=json&callback=fetchJSON'>
+  <!--<script src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2Fretningslinjer%2Fhjerneslag%2FSekundarforebygging%2FSekundarforeb%2Bhjerneblodning%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'maintextguideline'%5D%22&format=json&callback=fetchJSON">-->
+  <script src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%22&format=json&callback=fetchURLs">
   </script> 
 </body>
 </html>
