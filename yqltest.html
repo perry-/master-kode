@@ -22,11 +22,28 @@
             var subchapter_link = subchapters[j].a.href;
 
             output += "<h3><a href='"+subchapter_link+"'>"+subchapter_title+"</a></h3>";
+
+            $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" +encodeURIComponent(subchapter_link) + "%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'guideline'%5D%2Fdiv%5B2%5D%2Fdiv%5B1%5D%22&format=json&callback=?",
+
+              function(data){
+                var results = data.query.results;
+
+                if(results && results.div.div){
+                  for(k=0; k<results.div.div; k++){
+                    output += "<p>"+results.div.div[k]+"</p>";
+                  }
+                }
+              }
+            );
+
+
+            //console.log("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22" +encodeURIComponent(subchapter_link) + "%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'guideline'%5D%2Fdiv%5B2%5D%2Fdiv%5B1%5D%22&format=json");
           }
         }
 
-       /*
-        $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D'" +encodeURIComponent(link) + "'%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'maintextguideline'%5D%22&format=json&callback=?",
+        
+       
+       /* $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D'" +encodeURIComponent(link) + "'%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'maintextguideline'%5D%22&format=json&callback=?",
 
           function(data){
             var results = data.query.results;
