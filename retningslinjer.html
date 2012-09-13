@@ -1,0 +1,97 @@
+<html>
+  <head><title>Nasjonale retningslinjer for behandling og rehabilitering ved hjerneslag</title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+  <script type='text/javascript'>
+
+    //Henter inn linker fra innholdsfortegnelsen til retningslinjene i form av JSON-objekter
+    function fetchURLs(jsonObject){
+      var urls = jsonObject.query.results.ul.li;
+      var no_urls = urls.length;
+      var output = '';
+      var subchapter_ID = 0;
+
+      for(i=0; i<no_urls; i++){
+        var title = urls[i].a.content;
+        var link = urls[i].a.href;
+        
+        $('#results').append("<h2 class='chapterheading'><a href='"+link+"'>"+title+"</a></h2>");
+
+        //output += "<h2><a href='"+link+"'>"+title+"</a></h2>";
+
+        if(urls[i].ul && urls[i].ul.li){
+          var subchapters = urls[i].ul.li;
+
+          for(j=0; j<subchapters.length; j++){
+            var subchapter_title = subchapters[j].a.content;
+            var subchapter_link = subchapters[j].a.href;
+
+            $('#results').append("<h3><a href='"+subchapter_link+"'>"+subchapter_title+"</a></h3>");
+            //output += "<h3><a href='"+subchapter_link+"'>"+subchapter_title+"</a></h3>";
+
+            $('#results').append('<div id="'+subchapter_ID+'"></div>');
+
+            fetchMaintext(subchapter_ID, subchapter_link);
+
+            subchapter_ID++;
+
+          }
+        }
+      }
+
+      //Skriver ut output
+      //document.getElementById('results').innerHTML = output;
+    }
+
+     //Henter ut innholdet i hver link som JSON-P og legger det i output-variabelen
+    function fetchMaintext(subchapter_ID, subchapter_link){
+      $.getJSON("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22"+encodeURIComponent(subchapter_link)+"%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'guideline'%5D%2Fdiv%5B2%5D%2Fdiv%5B1%5D%22&format=json&callback=?",
+
+              function(data){
+                var results = data.query.results;
+
+                if(results){
+                  var recommendation = results.div.div.table;
+
+                  $('#'+subchapter_ID).append(recommendation);
+
+                  var maintext = results.div.div.p;
+                  
+                  if(typeof maintext == "undefined"){
+                    console.log(results.div.div[1]);
+
+                    var subcolumn = results.div.div;
+
+                    for(k=0; k<subcolumn.length; k++){
+                      if(subcolumn[k].id == "maintextguideline"){
+                        console.log(subcolumn[k]);
+                        $('#'+subchapter_ID).append(subcolumn[k]);
+
+                      }
+                    }
+                    //maintext = results.div[1].p;
+                    //$('#'+subchapter_ID).append(maintext);
+                  }else{
+                    for(k=0; k<maintext.length; k++){
+
+                      $('#'+subchapter_ID).append(maintext[k]);
+                      //output += "<p>"+maintext[k]+"</p>"; 
+
+                    }
+                  }
+                }
+              }
+        );
+    }
+
+
+
+    </script>
+  </head>
+  <body>
+  <div id='results'></div>
+  <!-- Script som kjører spørringer mot helsebiblioteket.no, via YQL. Metoden fetchURLs tar imot JSON-objekt -->
+  <script src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%22&format=json&callback=fetchURLs">
+  </script> 
+</body>
+</html>
