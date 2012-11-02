@@ -7,8 +7,6 @@
   <script src="http://yui.yahooapis.com/3.7.3/build/yui/yui-min.js"></script>
   <script type='text/javascript'>
 
-    var inputID = 0;
-
     $(document).ready(function() {
       $(".content").hide();
       $(".chapterheading").prepend("<button name='button' onclick='showHide(this)' type='button'>[+]</button>");
@@ -29,81 +27,81 @@
     function fetchURLs(jsonObject){
       var urls = jsonObject.query.results.a;
       var no_urls = urls.length;
-      var recommendation_ID = 0;
+      window.recommendation_ID = 0;
+
+      window.cache.add("length", no_urls);
 
       for(i=0; i<no_urls; i++){
-        var title = urls[i].content;
         var link = urls[i].href;
 
-        //$('#results').append("<h3 class='chapterheading' id='h"+recommendation_ID+"'><a href='"+link+"'></a></h2>");
-        //$('#results').append("<div class='content' id='"+recommendation_ID+"'></div>");
-
-        if(window.cache.retrieve(recommendation_ID) == null){
-          fetchMaintext(recommendation_ID, link);
-        }else{
-          var chapterHeading = window.cache.retrieve("h"+recommendation_ID);
-          var recommendations = window.cache.retrieve("recommendation"+recommendation_ID);
-
-          /*
-          if($('#h'+recommendation_ID)[0].children[0]){
-            $('#h'+recommendation_ID)[0].children[0].innerHTML = chapterHeading.response;
-            $('#'+recommendation_ID)[0].innerHTML = recommendations.response;
-          }*/
+        if(window.cache.retrieve(i) == null){
+          fetchMaintext(link);
         }
-
-        recommendation_ID++;
       }
     }
 
      //Henter ut innholdet i hver link som JSON-P og legger det i output-variabelen
-    function fetchMaintext(ID, link){
-        //xpath="//*[@id='recommendations']/ancestor::div/preceding-sibling::h2|//*[@id='recommendations']"
-        var url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22"+encodeURIComponent(link)+"%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'recommendations'%5D%2Fancestor%3A%3Adiv%2Fpreceding-sibling%3A%3Ah2%7C%2F%2F*%5B%40id%3D'recommendations'%5D%22&format=html";
-      
-        $.ajax({
-          url: url,
-          processData: false,
-          dataType: "html",
-          success: function(data){
-            if($(data)[2].firstChild.innerHTML){
-              var chapterHeading = $(data)[2].firstChild.firstChild.innerHTML;
-              var recommendations = $(data)[2].firstChild.children[1].innerHTML;
+    function fetchMaintext(link){
+      //xpath="//*[@id='recommendations']/ancestor::div/preceding-sibling::h2|//*[@id='recommendations']"
+      var url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22"+encodeURIComponent(link)+"%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'recommendations'%5D%2Fancestor%3A%3Adiv%2Fpreceding-sibling%3A%3Ah2%7C%2F%2F*%5B%40id%3D'recommendations'%5D%22&format=html";
+    
+      $.ajax({
+        url: url,
+        processData: false,
+        dataType: "html",
+        success: function(data){
+          if($(data)[2].firstChild.innerHTML){
+            var chapterHeading = $(data)[2].firstChild.firstChild.innerHTML;
+            var recommendations = $(data)[2].firstChild.children[1].innerHTML;
 
-              //$('#h'+ID)[0].children[1].innerHTML = chapterHeading;
-              //$('#'+ID)[0].innerHTML = recommendations;
-              
-              cache.add("h"+ID, chapterHeading);
-              cache.add("url"+ID, link);
-              cache.add("recommendation"+ID, recommendations);
-            }else{
-              $('#h'+ID).remove();
-              $('#'+ID).remove();
-            }
+            window.cache.add("h"+window.recommendation_ID, chapterHeading);
+            window.cache.add("url"+window.recommendation_ID, link);
+            window.cache.add("recommendation"+window.recommendation_ID, recommendations);
+
+            window.recommendation_ID++;
           }
-        });
+        }
+      });
     }
 
     function URLToArray() {
       var url = window.location.search.substring(4);
-      var array = url.substring(url.indexOf('{') + 1, url.indexOf('}')).split(',');
+      var array = null;
       
+      if(url != ""){
+         array = url.substring(url.indexOf('{') + 1, url.indexOf('}')).split(',');
+      }
+
       return array;
   }
 
-    window.onload = function (){
-      var inputArray = URLToArray();
+  window.onload = function (){
+    var inputArray = URLToArray();
 
+    if(inputArray){
       for(var i=0; i<inputArray.length; i++){
         var input = parseInt(inputArray[i]);
-        var chapterHeadingEntry = window.cache.retrieve('h'+input);
-        var urlEntry = window.cache.retrieve('url'+input);
-        var recommendationEntry = window.cache.retrieve("recommendation"+input);
+        
+        showRecommendation(input);  
+      }  
+    }else{
+      var cacheLength = window.cache.retrieve("length").response;
 
-        $('#results').append("<h3 class='chapterheading' id='h"+input+"'><a href='"+urlEntry.response+"'>"+chapterHeadingEntry.response+"</a></h3>");
-        $('#results').append("<div class='content' id='recommendation"+input+"'>"+recommendationEntry.response+"</div>");  
+      for(var i=0; i<cacheLength; i++){
+        showRecommendation(i);
       }
-      
     }
+  }
+
+  function showRecommendation(ID){
+    var chapterHeadingEntry = window.cache.retrieve('h'+ID);
+    var urlEntry = window.cache.retrieve('url'+ID);
+    var recommendationEntry = window.cache.retrieve("recommendation"+ID);
+
+    debugger;
+    $('#results').append("<h3 class='chapterheading' id='h"+ID+"'><a href='"+urlEntry.response+"'>"+chapterHeadingEntry.response+"</a></h3>");
+    $('#results').append("<div class='content' id='recommendation"+ID+"'>"+recommendationEntry.response+"</div>");
+  }
 
     </script>
   </head>
