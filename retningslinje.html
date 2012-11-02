@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+  <head><title>Nasjonale retningslinjer for behandling og rehabilitering ved hjerneslag</title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="http://yui.yahooapis.com/3.7.3/build/yui/yui-min.js"></script>
+  <script type='text/javascript'>
+
+    var inputID = 0;
+
+    $(document).ready(function() {
+      $(".content").hide();
+      $(".chapterheading").prepend("<button name='button' onclick='showHide(this)' type='button'>[+]</button>");
+    });
+
+    function showHide(button){
+      var content = $('#'+button.parentElement.id.substring(1))
+      content.slideToggle('normal');
+
+      if(button.innerHTML == "[+]"){
+        button.innerHTML = "[\u2013]"
+      }else{
+        button.innerHTML = "[+]"
+      } 
+    } 
+
+    //Henter inn linker fra innholdsfortegnelsen til retningslinjene i form av JSON-objekter
+    function fetchURLs(jsonObject){
+      var urls = jsonObject.query.results.a;
+      var no_urls = urls.length;
+      var recommendation_ID = 0;
+
+      for(i=0; i<no_urls; i++){
+        var title = urls[i].content;
+        var link = urls[i].href;
+
+        //$('#results').append("<h3 class='chapterheading' id='h"+recommendation_ID+"'><a href='"+link+"'></a></h2>");
+        //$('#results').append("<div class='content' id='"+recommendation_ID+"'></div>");
+
+        if(window.cache.retrieve(recommendation_ID) == null){
+          fetchMaintext(recommendation_ID, link);
+        }else{
+          var chapterHeading = window.cache.retrieve("h"+recommendation_ID);
+          var recommendations = window.cache.retrieve("recommendation"+recommendation_ID);
+
+          /*
+          if($('#h'+recommendation_ID)[0].children[0]){
+            $('#h'+recommendation_ID)[0].children[0].innerHTML = chapterHeading.response;
+            $('#'+recommendation_ID)[0].innerHTML = recommendations.response;
+          }*/
+        }
+
+        recommendation_ID++;
+      }
+    }
+
+     //Henter ut innholdet i hver link som JSON-P og legger det i output-variabelen
+    function fetchMaintext(ID, link){
+        //xpath="//*[@id='recommendations']/ancestor::div/preceding-sibling::h2|//*[@id='recommendations']"
+        var url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22"+encodeURIComponent(link)+"%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'recommendations'%5D%2Fancestor%3A%3Adiv%2Fpreceding-sibling%3A%3Ah2%7C%2F%2F*%5B%40id%3D'recommendations'%5D%22&format=html";
+      
+        $.ajax({
+          url: url,
+          processData: false,
+          dataType: "html",
+          success: function(data){
+            if($(data)[2].firstChild.innerHTML){
+              var chapterHeading = $(data)[2].firstChild.firstChild.innerHTML;
+              var recommendations = $(data)[2].firstChild.children[1].innerHTML;
+
+              //$('#h'+ID)[0].children[1].innerHTML = chapterHeading;
+              //$('#'+ID)[0].innerHTML = recommendations;
+              
+              cache.add("h"+ID, chapterHeading);
+              cache.add("url"+ID, link);
+              cache.add("recommendation"+ID, recommendations);
+            }else{
+              $('#h'+ID).remove();
+              $('#'+ID).remove();
+            }
+          }
+        });
+    }
+
+    function URLToArray() {
+      var url = window.location.search.substring(4);
+      var array = url.substring(url.indexOf('{') + 1, url.indexOf('}')).split(',');
+      
+      return array;
+  }
+
+    window.onload = function (){
+      var inputArray = URLToArray();
+
+      for(var i=0; i<inputArray.length; i++){
+        var input = parseInt(inputArray[i]);
+        var chapterHeadingEntry = window.cache.retrieve('h'+input);
+        var urlEntry = window.cache.retrieve('url'+input);
+        var recommendationEntry = window.cache.retrieve("recommendation"+input);
+
+        $('#results').append("<h3 class='chapterheading' id='h"+input+"'><a href='"+urlEntry.response+"'>"+chapterHeadingEntry.response+"</a></h3>");
+        $('#results').append("<div class='content' id='recommendation"+input+"'>"+recommendationEntry.response+"</div>");  
+      }
+      
+    }
+
+    </script>
+  </head>
+  <body>
+  <div id='results'></div>
+
+  <!-- Initialize caching -->
+  <script type='text/javascript'>
+    YUI().use('cache', function (Y) {
+      window.cache = new Y.CacheOffline();
+    });
+  </script>
+
+  <!-- Script som kjører spørringer mot helsebiblioteket.no, via YQL. Metoden fetchURLs tar imot JSON-objekt -->
+  <script src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%2F%2Fa%22&format=json&callback=fetchURLs">
+  </script> 
+</body>
+</html>

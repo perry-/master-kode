@@ -1,0 +1,31 @@
+#results {
+	width: 75em;
+	margin: auto;
+	font-size: 1.1em;
+}
+.content{
+	margin-left: 5em;
+}
+.subchapterheading{
+	margin-left: 2em;
+}
+button {
+	border: none;
+	background: none;
+}
+table td{
+	vertical-align: top;
+}
+table p{
+	padding: 0 0.5em;
+}
+table tr{
+	border-bottom: 1px solid #ddd;
+}
+table th{
+	text-align: left;
+}
+table {
+	border: 1px solid #ccc;
+	margin: 1em 0;
+}
