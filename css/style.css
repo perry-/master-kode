@@ -1,5 +1,5 @@
 #results {
-	width: 75em;
+	width: 50em;
 	margin: auto;
 	font-size: 1.1em;
 }
@@ -9,7 +9,7 @@
 .subchapterheading{
 	margin-left: 2em;
 }
-button {
+[name=showHideBtn] {
 	border: none;
 	background: none;
 }

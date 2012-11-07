@@ -7,13 +7,8 @@
   <script src="http://yui.yahooapis.com/3.7.3/build/yui/yui-min.js"></script>
   <script type='text/javascript'>
 
-    $(document).ready(function() {
-      $(".content").hide();
-      $(".chapterheading").prepend("<button name='button' onclick='showHide(this)' type='button'>[+]</button>");
-    });
-
     function showHide(button){
-      var content = $('#'+button.parentElement.id.substring(1))
+      var content = $('#recommendation'+button.parentElement.id.substring(1));
       content.slideToggle('normal');
 
       if(button.innerHTML == "[+]"){
@@ -34,7 +29,7 @@
       for(i=0; i<no_urls; i++){
         var link = urls[i].href;
 
-        if(window.cache.retrieve(i) == null){
+        if(window.cache.retrieve("recommendation"+i) == null){
           fetchMaintext(link);
         }
       }
@@ -64,7 +59,7 @@
       });
     }
 
-    function URLToArray() {
+  function URLToArray() {
       var url = window.location.search.substring(4);
       var array = null;
       
@@ -91,6 +86,9 @@
         showRecommendation(i);
       }
     }
+
+    $(".content").hide();
+    $(".chapterheading").prepend("<button name='showHideBtn' onclick='showHide(this)' type='button'>[+]</button>");
   }
 
   function showRecommendation(ID){
@@ -98,25 +96,36 @@
     var urlEntry = window.cache.retrieve('url'+ID);
     var recommendationEntry = window.cache.retrieve("recommendation"+ID);
 
-    debugger;
-    $('#results').append("<h3 class='chapterheading' id='h"+ID+"'><a href='"+urlEntry.response+"'>"+chapterHeadingEntry.response+"</a></h3>");
-    $('#results').append("<div class='content' id='recommendation"+ID+"'>"+recommendationEntry.response+"</div>");
+    if(chapterHeadingEntry && urlEntry && recommendationEntry){
+      $('#results').append("<h3 class='chapterheading' id='h"+ID+"'><a href='"+urlEntry.response+"'>"+chapterHeadingEntry.response+"</a></h3>");
+      $('#results').append("<div class='content' id='recommendation"+ID+"'>"+recommendationEntry.response+"</div>");
+    }
   }
 
+  function flushCache(){
+    window.cache.flush();
+  }
     </script>
   </head>
   <body>
-  <div id='results'></div>
+    <div class="navbar navbar-fixed-top navbar-inverse">
+      <div class="navbar-inner">
+        <div class="container">
+          <button name="flush" value="Flush cache" onclick="flushCache()" class="btn">Flush cache</button>
+       </div>
+      </div>
+    </div>
+    <div id='results'></div>
 
-  <!-- Initialize caching -->
-  <script type='text/javascript'>
-    YUI().use('cache', function (Y) {
-      window.cache = new Y.CacheOffline();
-    });
-  </script>
+    <!-- Initialize caching -->
+    <script type='text/javascript'>
+      YUI().use('cache', function (Y) {
+        window.cache = new Y.CacheOffline();
+      });
+    </script>
 
-  <!-- Script som kjører spørringer mot helsebiblioteket.no, via YQL. Metoden fetchURLs tar imot JSON-objekt -->
-  <script src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%2F%2Fa%22&format=json&callback=fetchURLs">
-  </script> 
-</body>
+    <!-- Script som kjører spørringer mot helsebiblioteket.no, via YQL. Metoden fetchURLs tar imot JSON-objekt -->
+    <script src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%2F%2Fa%22&format=json&callback=fetchURLs">
+    </script> 
+  </body>
 </html>
