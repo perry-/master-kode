@@ -24,7 +24,9 @@
       var no_urls = urls.length;
       window.recommendation_ID = 0;
 
-      window.cache.add("length", no_urls);
+      if(window.cache.retrieve("length") == null){
+        window.cache.add("length", no_urls);
+      }
 
       for(i=0; i<no_urls; i++){
         var link = urls[i].href;
