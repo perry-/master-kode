@@ -1,4 +1,8 @@
-<guidelines><recommendations><results id="recommendation0"><h2 class="chapterheading">1.1 Hva er nasjonale faglige retningslinjer?</h2><div id="recommendations">
+<guidelines><recommendation id="recommendation0" link="http://www.helsebiblioteket.no/retningslinjer/hjerneslag/metode-og-kunnskapsgrunnlag/nasjonale-retningslinjer"><guidelinebreadcrumb><a href="http://www.helsebiblioteket.no/retningslinjer/hjerneslag/metode-og-kunnskapsgrunnlag">Metode og kunnskapsgrunnlag</a>
+<p>&#160;<strong>&gt;&#160;</strong></p>
+</guidelinebreadcrumb><h2 class="chapterheading">1.1 Hva er nasjonale faglige retningslinjer?</h2>
+
+<div id="recommendations">
 <p>her er en beskrivende tekst</p>
 <table class="recommendation">
 <tr>
@@ -46,4 +50,5 @@
 </td>
 </tr>
 </table>
-</div></results></recommendations></guidelines>
+</div>
+</recommendation></guidelines>
