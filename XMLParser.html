@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  	<head><title>Nasjonale retningslinjer for behandling og rehabilitering ved hjerneslag</title>
+  	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+  	<link rel="stylesheet" type="text/css" href="css/style.css" />
+  	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+  	<script type='text/javascript'>
+
+ 	 $(document).ready(function(){
+ 	 	var inputArray = URLToArray();
+ 	 	var recommendation;
+    var no_recommendations = 0;
+
+ 	 	$.get("results.xml",{}, function(xml){
+
+      if(inputArray){
+        no_recommendations = inputArray.length;
+      }else{
+        no_recommendations = parseInt(xml.firstChild.lastChild.getAttribute('id').substr(14))
+      }
+
+      for(var i=0; i<no_recommendations; i++){
+        var ID = 0;
+        if(inputArray){
+          ID = inputArray[i];
+        }else{
+          ID = i;
+        }
+
+        recommendation_element = $('#recommendation'+ID, xml)[0];
+
+        heading = recommendation_element.childNodes[1];
+        recommendations = recommendation_element.childNodes[3];
+        $(recommendations).attr('id', recommendation_element.getAttribute('id')); 
+        $(heading).wrap("<a href='"+recommendation_element.getAttribute('link')+"'></a>");
+
+        $('#results').append((new XMLSerializer()).serializeToString(heading));
+        $('#results').append((new XMLSerializer()).serializeToString(recommendations));
+      } 
+      
+ 	 	});
+
+ 	 });
+
+ 	 function URLToArray() {
+      var url = window.location.search.substring(4);
+      var array = null;
+      
+      if(url != ""){
+         array = url.substring(url.indexOf('{') + 1, url.indexOf('}')).split(',');
+      }
+
+      return array;
+    }
+ 	</script>
+	</head> 
+	<body>
+	<div id="results"></div>
+
+	</body>
+</html>
