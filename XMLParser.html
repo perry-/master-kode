@@ -60,7 +60,7 @@
       var array = null;
       
       if(url != ""){
-         array = url.substring(url.indexOf('{') + 1, url.indexOf('}')).split(',');
+         array = url.substring(url.indexOf('=') + 1).split(',');
       }
 
       return array;
