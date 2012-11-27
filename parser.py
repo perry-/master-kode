@@ -28,7 +28,7 @@ def fetchMaintext(url):
 			content = results_element.find(".//*[@id='recommendations']") # Find first element with id="recommendations"
 
 			recommendation_element = ET.SubElement(root, "recommendation", {"id" : "recommendation"+str(recommendation_ID), "link" : url}) # Create recommendation element with id and link as attributes
-			breadcrumb_element = ET.SubElement(recommendation_element, "guidelinebreadcrumb") 
+			breadcrumb_element = ET.SubElement(recommendation_element, "div") 
 			breadcrumb_element.extend(guidelinebreadcrumb)
 
 			recommendation_element.append(heading)
