@@ -13,6 +13,7 @@
     var no_recommendations = 0;
     var total_no_recommendations = 0;
     var invalidIDs = "";
+    var error = false;
     
     $.get("results.xml",{}, function(xml){
       total_no_recommendations = parseInt(xml.firstChild.lastChild.getAttribute('id').substr(14))+1; //Fetches the last recommendation, gets the id and adds 1 (to get number of recommendations)
@@ -59,8 +60,9 @@
           $("#recommendation"+ID).prepend(heading);
  
         }else{
-          if($("#invalidIDs") == null && inputArray.length>0){
+          if(!error && inputArray.length>0){
             $("#results").prepend("<div id='invalidIDs' class='alert alert-error'>Ugyldig id: "+ID+"</div>");
+            error = true;
           }else{
             $("#invalidIDs").append(", "+ID);
           }
@@ -73,13 +75,20 @@
 
    function URLToArray() {
       var url = window.location.search.substring(4);
-      var array = null;
+      var array = [];
       
       if(url != ""){
          array = url.substring(url.indexOf('=') + 1).split(',');
       }
 
-      return array;
+      var unique_ids = [];
+
+      //Remove duplicates
+      $.each(array, function(i, element){
+        if($.inArray(element, unique_ids) === -1) unique_ids.push(element);
+      });
+
+      return unique_ids;
     }
   </script>
   </head> 
