@@ -4,18 +4,23 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
     <script type='text/javascript'>
 
    $(document).ready(function(){
     var inputArray = URLToArray();
     var recommendation;
     var no_recommendations = 0;
+    var total_no_recommendations = 0;
+    var invalidIDs = "";
     
     $.get("results.xml",{}, function(xml){
+      total_no_recommendations = parseInt(xml.firstChild.lastChild.getAttribute('id').substr(14))+1; //Fetches the last recommendation, gets the id and adds 1 (to get number of recommendations)
+
       if(inputArray){
         no_recommendations = inputArray.length;
       }else{
-        no_recommendations = parseInt(xml.firstChild.lastChild.getAttribute('id').substr(14))+1 //Fetches the last recommendation, gets the id and adds 1 (to get number of recommendations)
+        no_recommendations =  total_no_recommendations; 
       }
 
       for(var i=0; i<no_recommendations; i++){
@@ -26,34 +31,45 @@
           ID = i;
         }
 
-        recommendation_element = $('#recommendation'+ID, xml)[0]; //Find the recommendation element in results.xml
+        if(ID < total_no_recommendations-1){
 
-        recommendations = recommendation_element.childNodes[3];
-        $(recommendations).attr('id', recommendation_element.getAttribute('id'));
-        $('#results').append((new XMLSerializer()).serializeToString(recommendations));
+          recommendation_element = $('#recommendation'+ID, xml)[0]; //Find the recommendation element in results.xml
 
-        heading = recommendation_element.childNodes[1];
-        heading = "<a href='"+recommendation_element.getAttribute('link')+"'>"+(new XMLSerializer()).serializeToString(heading)+"</a>";
+          recommendations = recommendation_element.childNodes[3];
+          $(recommendations).attr('id', recommendation_element.getAttribute('id'));
+          $(recommendations).find("table").attr('class', 'table table-hover table-bordered');
+          $('#results').append((new XMLSerializer()).serializeToString(recommendations));
 
-        breadcrumbs = $(recommendation_element.firstChild).find("a");
-        output = $('<div></div>');
+          heading = recommendation_element.childNodes[1];
+          heading = "<a target='_blank' title='ID: "+ID+"' href='"+recommendation_element.getAttribute('link')+"'>"+(new XMLSerializer()).serializeToString(heading)+"</a>";
 
-        for(var j=0; j<breadcrumbs.length; j++){
-          var href = breadcrumbs[j].getAttribute("href");
-          var title = breadcrumbs[j].textContent;
+          breadcrumbs = $(recommendation_element.firstChild).find("a");
+          output = $("<ul class='breadcrumb'></ul>");
 
-          output.append("<a href='"+href+"'>"+title+"</a> &#62 ");
+          for(var j=0; j<breadcrumbs.length; j++){
+            var href = breadcrumbs[j].getAttribute("href");
+            var title = breadcrumbs[j].textContent;
+
+            output.append("<li><a target='_blank' href='"+href+"'>"+title+"</a> <span class'divider'>></span></li>");
+          }
+
+          output.append("<li class='active'> "+$(heading).text()+" </li>");
+
+          $("#recommendation"+ID).prepend(output);
+          $("#recommendation"+ID).prepend(heading);
+ 
+        }else{
+          if($("#invalidIDs") == null && inputArray.length>0){
+            $("#results").prepend("<div id='invalidIDs' class='alert alert-error'>Ugyldig id: "+ID+"</div>");
+          }else{
+            $("#invalidIDs").append(", "+ID);
+          }
         }
-
-        $("#recommendation"+ID).prepend(output);
-
-        $("#recommendation"+ID).prepend(heading);
-
       } 
       
     });
-
    });
+
 
    function URLToArray() {
       var url = window.location.search.substring(4);
@@ -68,7 +84,7 @@
   </script>
   </head> 
   <body>
-  <div id="results"></div>
+    <div id="results"></div>
 
   </body>
 </html>
