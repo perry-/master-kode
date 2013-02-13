@@ -31,7 +31,7 @@ def fetchMaintext(url):
 				content.__delitem__(0) # Removes "her er en beskrivende tekst"
 
 			recommendation_element = ET.SubElement(root, "recommendation", {"id" : "recommendation"+str(recommendation_ID), "link" : url}) # Create recommendation element with id and link as attributes
-			breadcrumb_element = ET.SubElement(recommendation_element, "div") 
+			breadcrumb_element = ET.SubElement(recommendation_element, "div", {"class" : "breadcrumbs"})
 			breadcrumb_element.extend(guidelinebreadcrumb)
 
 			recommendation_element.append(heading)
