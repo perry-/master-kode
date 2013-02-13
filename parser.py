@@ -3,7 +3,7 @@ import urllib2
 import json
 
 # Load urls from table of contents (http://www.helsebiblioteket.no/retningslinjer/hjerneslag/innhold)
-result = urllib2.urlopen("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FHjerneslag%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%2F%2Fa%22&format=json").read()
+result = urllib2.urlopen("http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fwww.helsebiblioteket.no%2FRetningslinjer%2FProstatakreft%2FInnhold%22%20and%20xpath%3D%22%2F%2F*%5B%40id%3D'leftmenu'%5D%2F%2Fa%22&format=json").read()
 data = json.loads(result)
 recommendation_ID = 0
 
@@ -53,6 +53,6 @@ def fetchURLs():
 	# Create element tree from root element its children
 	tree = ET.ElementTree(root)
 	# Write tree to file
-	tree.write("results.xml")
+	tree.write("test.xml")
 
 fetchURLs()
