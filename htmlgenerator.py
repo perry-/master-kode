@@ -63,7 +63,7 @@ def fetchRecommendation(url, title):
 			recommendation_element.append(content)
 
 			# Write tree to file
-			tree.write("recommendation"+str(recommendation_ID)+".html")
+			tree.write("recommendations/recommendation"+str(recommendation_ID)+".html")
 
 			recommendation_ID += 1
 
@@ -72,7 +72,7 @@ def fetchRecommendation(url, title):
 
 def fetchURLs():
 	no_urls = len(data['query']['results']['a'])
-	for x in xrange(1, 10):#no_urls):
+	for x in xrange(1, no_urls):
 		url = data['query']['results']['a'][x]['href']
 		title = data['query']['results']['a'][x]['content']
 		print("Fetching recommendation from "+url+" ("+str(x)+"/"+str(no_urls)+")")
