@@ -38,8 +38,8 @@ def fetchRecommendation(url, title):
 
 			title_element = ET.SubElement(head, "title")
 			title_element.text = title;
-			stylesheet1 = ET.SubElement(head, "link", {"rel":"stylesheet", "type":"text/css","href":"css/bootstrap.css"})
-			stylesheet1 = ET.SubElement(head, "link", {"rel":"stylesheet", "type":"text/css","href":"css/style.css"})
+			stylesheet1 = ET.SubElement(head, "link", {"rel":"stylesheet", "type":"text/css","href":"../css/bootstrap.css"})
+			stylesheet1 = ET.SubElement(head, "link", {"rel":"stylesheet", "type":"text/css","href":"../css/style.css"})
 
 			recommendation_element = ET.SubElement(body, "div", {"id" : "recommendation"+str(recommendation_ID)}) # Create recommendation element with id and link as attributes
 
