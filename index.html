@@ -39,10 +39,13 @@
           recommendations = recommendation_element.childNodes[3];
           $(recommendations).attr('id', recommendation_element.getAttribute('id'));
           $(recommendations).find("table").attr('class', 'table table-hover table-bordered');
+          $(recommendations).find("table").parent().wrapInner("<div />");
+          $(recommendations).find("table").parent().attr("id", "content"+ID);
+          $(recommendations).find("table").parent().attr("class", "collapse");
           $('#results').append((new XMLSerializer()).serializeToString(recommendations));
 
           heading = recommendation_element.childNodes[1];
-          heading = "<a target='_blank' title='ID: "+ID+"' href='"+recommendation_element.getAttribute('link')+"'>"+(new XMLSerializer()).serializeToString(heading)+"</a>";
+          heading = "<button type='button' class='btn btn-link' data-toggle='collapse' data-target='#content"+ID+"' title='ID: "+ID+"'>"+(new XMLSerializer()).serializeToString(heading)+"</button>";
 
           breadcrumbs = $(recommendation_element.firstChild).find("a");
           output = $("<ul class='breadcrumb'></ul>");
@@ -51,12 +54,12 @@
             var href = breadcrumbs[j].getAttribute("href");
             var title = breadcrumbs[j].textContent;
 
-            output.append("<li><a target='_blank' href='"+href+"'>"+title+"</a> <span class'divider'>></span></li>");
+            output.append("<li>"+title+"<span class'divider'>></span></li>");
           }
 
           output.append("<li class='active'> "+$(heading).text()+" </li>");
 
-          $("#recommendation"+ID).prepend(output);
+          $("#content"+ID).prepend(output);
           $("#recommendation"+ID).prepend(heading);
  
         }else{
