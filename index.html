@@ -17,7 +17,7 @@
     
     $.get("results.xml",{}, function(xml){
       total_no_recommendations = parseInt(xml.firstChild.lastChild.getAttribute('id').substr(14))+1; //Fetches the last recommendation, gets the id and adds 1 (to get number of recommendations)
-
+      
       if(inputArray){
         no_recommendations = inputArray.length;
       }else{

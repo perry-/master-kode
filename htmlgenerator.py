@@ -7,12 +7,12 @@ result = urllib2.urlopen("http://query.yahooapis.com/v1/public/yql?q=select%20*%
 data = json.loads(result)
 recommendation_ID = 0
 
+root = ET.Element("html")
+head = ET.SubElement(root, "head")
+body = ET.SubElement(root, "body")
+body.set("id","results")
 
 def fetchRecommendation(url, title):
-	root = ET.Element("html")
-	head = ET.SubElement(root, "head")
-	body = ET.SubElement(root, "body")
-	body.set("id","results")
 	# Create element tree from root element
 	tree = ET.ElementTree(root)
 	# Parse url with xpath="//*[@id='recommendations']/ancestor::div" (Finds all chapters with a recommendation)
