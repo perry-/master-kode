@@ -1,0 +1,9 @@
+body{
+	width: 55em;
+	margin: auto;
+	font-size: 1.1em;
+}
+
+.gsc-url-top{
+	display: none;
+}
